@@ -1,45 +1,57 @@
+from argparse import ArgumentParser
+
 from handler import VirtualenvHandler, GlobalPackageLocalHandler, \
                     GlobalPackageRemoteHandler
 from installer import Installer
 
-from sys import argv
+def get_registry_key(args):
+    if args.venv_name:
+        venv = 'y'
+    else:
+        venv = 'n'
+    
+    if args.host_ip:
+        host = 'remote'
+    else:
+        host = 'localhost'
+    
+    registry_key = host + '_' + args.python + '_' + venv
+    return registry_key
 
 # reading parameter
-if '-h' in argv:
-    host_ip = argv[argv.index('-h') + 1]
-    host = 'remote'
-else:
-    host = 'localhost'
-    host_ip = None
+parser = ArgumentParser()
+parser.add_argument("-p", "--python",
+                        action="store",
+                        help="select your Python [system|anaconda]",
+                        dest="python", default='system')
 
-if '-p' in argv:
-    python = argv[argv.index('-p') + 1]
-else:
-    python = 'system'
+parser.add_argument("-v", "--virtuelenv",
+                        action="store",
+                        help="selct a virtualenv name",
+                        dest="venv_name", default='')
 
-if '-v' in argv:
-    venv_name = argv[argv.index('-v') + 1]
-    venv = 'y'
-else:
-    venv = 'n'
-    venv_name = None
+parser.add_argument("-H", "--host",
+                        action="store",
+                        help="select the host_ip",
+                        dest="host_ip", default='')
+args = parser.parse_args()
 
 
 handler_to_register = {}
 # add a combination for all supported parameters
-handler_to_register['localhost_system_y'] = [VirtualenvHandler(venv_name).install,
+handler_to_register['localhost_system_y'] = [VirtualenvHandler(args.venv_name).install,
                                              GlobalPackageLocalHandler().install]
-handler_to_register['remote_anaconda_n'] = [GlobalPackageRemoteHandler(host_ip).install]
+handler_to_register['remote_anaconda_n'] = [GlobalPackageRemoteHandler(args.host_ip).install]
 
 # create a installer
 maininstaller = Installer()
 
 # get the key out of the arguments given
-registry_name = host + '_' + python + '_' + venv
+registry_key = get_registry_key(args)
 
 # register all handlers for the given arguments
-if registry_name in handler_to_register:
-    for handler in handler_to_register[registry_name]:
+if registry_key in handler_to_register:
+    for handler in handler_to_register[registry_key]:
         maininstaller.register(handler)
 else:
     print('Parameters are not supported.')
