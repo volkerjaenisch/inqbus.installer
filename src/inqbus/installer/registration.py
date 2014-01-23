@@ -39,9 +39,11 @@ args = parser.parse_args()
 
 handler_to_register = {}
 # add a combination for all supported parameters
-handler_to_register['localhost_system_y'] = [VirtualenvHandler(args.venv_name).install,
-                                             GlobalPackageLocalHandler().install]
-handler_to_register['remote_anaconda_n'] = [GlobalPackageRemoteHandler(args.host_ip).install]
+handler_to_register['localhost_system_y'] = [
+                            (VirtualenvHandler(args.venv_name).install, 'virtualenv'),
+                            (GlobalPackageLocalHandler().install, 'globalpackages')]
+handler_to_register['remote_anaconda_n'] = [
+                            (GlobalPackageRemoteHandler(args.host_ip).install, 'globalpackages')]
 
 # create a installer
 maininstaller = Installer()
@@ -51,8 +53,8 @@ registry_key = get_registry_key(args)
 
 # register all handlers for the given arguments
 if registry_key in handler_to_register:
-    for handler in handler_to_register[registry_key]:
-        maininstaller.register(handler)
+    for handler, purpose in handler_to_register[registry_key]:
+        maininstaller.register(handler, purpose)
 else:
     print('Parameters are not supported.')
 
