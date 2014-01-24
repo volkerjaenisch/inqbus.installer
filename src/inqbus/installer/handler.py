@@ -1,20 +1,35 @@
-class VirtualenvHandler(object):
+from task import Task
+
+from fabric.colors import green, red, yellow
+from fabric import api
+from fabric.context_managers import prefix, cd
+from fabric.contrib import files
+from fabric.operations import run, prompt
+
+import os
+import sys
+import subprocess
+
+class LocalGlobalPackageHandler(object):
     
-    def __init__(self, env_name):
-        self.env_name = env_name
+    def __init__(self, install_command, check_cmd):
+        self.packages = []
+        self.install_command = install_command
+        self.check_cmd = check_cmd
+    
+    def add(self, package):
+        self.packages.append(package)
     
     def install(self):
-        print('virtualenv would be created. Name: %s' % self.env_name)
-
-class GlobalPackageLocalHandler(object):
-
-    def install(self):
-        print('Global packages would be installed locally.')
+        packages_to_install = []
+        for package in self.packages:
+            with api.settings(warn_only=True):
+                output = run(self.check_cmd % package)
+            if output.return_code != 0:
+                packages_to_install.append(package)
+        if len(packages_to_install) > 0:
+                print(red('Installation of global packages' +
+                          'requires root password.'))
+                run(self.install_command % ' '.join(packages_to_install))
         
-class GlobalPackageRemoteHandler(object):
     
-    def __init__(self, host):
-        self.host = host
-
-    def install(self):
-        print('Global packages would be remote installed. Host: %s' % self.host)
