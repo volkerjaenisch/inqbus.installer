@@ -1,4 +1,8 @@
-from task import Task
+import os
+import sys
+import subprocess
+
+from task import TaskMixin
 
 from fabric.colors import green, red, yellow
 from fabric import api
@@ -6,11 +10,12 @@ from fabric.context_managers import prefix, cd
 from fabric.contrib import files
 from fabric.operations import run, prompt
 
-import os
-import sys
-import subprocess
+class BaseHandler(object):
+    
+    def install(self):
+        pass
 
-class LocalGlobalPackageHandler(object):
+class LocalGlobalPackageHandler(TaskMixin):
     
     def __init__(self, install_command, check_cmd):
         self.packages = []

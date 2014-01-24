@@ -24,29 +24,21 @@ class GlobalPackageRemoteHandler(object):
         print('Global packages would be remote installed. Host: %s' % self.host)
 
 
-# reading parameter
-args = parse_arguments()
-
-
-handler_to_register = {}
-# add a combination for all supported parameters
-handler_to_register['localhost_system_y'] = [
-                            (VirtualenvHandler(args.venv_name).install, 'virtualenv'),
-                            (GlobalPackageLocalHandler().install, 'globalpackages')]
-handler_to_register['remote_anaconda_n'] = [
-                            (GlobalPackageRemoteHandler(args.host_ip).install, 'globalpackages')]
-
 # create a installer
 maininstaller = Installer()
 
-# get the key out of the arguments given
+# register Handler
+maininstaller.register_handler('localhost', 'y', 'system', 'debian', ['7.0', '7.1', '7.2', '7.3'],
+                                [(VirtualenvHandler(args.venv_name), 'virtualenv'),
+                                 (GlobalPackageLocalHandler(), 'globalpackages')])
+
+maininstaller.register_handler('remote', 'n', 'anaconda', 'debian', ['7.0', '7.1', '7.2', '7.3'],
+                                [(GlobalPackageRemoteHandler(args.host_ip), 'globalpackages')])
+
+# parse commandline arguments
+args = parse_arguments()
+
+# get key from commandlinarguments
 registry_key = get_registry_key(args)
 
-# register all handlers for the given arguments
-if registry_key in handler_to_register:
-    for handler, purpose in handler_to_register[registry_key]:
-        maininstaller.register(handler, purpose)
-else:
-    print('Parameters are not supported.')
-
-maininstaller.install()
+maininstaller.install(registry_key)
