@@ -1,11 +1,14 @@
 from inqbus.installer.installer import Installer
+from inqbus.installer.task import TaskMixin
 from inqbus.installer.registration import get_registry_key
 
+import os
 import platform
 import unittest
 
 
-class A(object):
+class BaseTestHandler(object):
+
     def __init__(self):
         self.installed = False
 
@@ -13,20 +16,20 @@ class A(object):
         self.installed = True
 
 
-class B(object):
-    def __init__(self):
-        self.installed = False
-
-    def install(self):
-        self.installed = True
+class A(BaseTestHandler):
+    pass
 
 
-class C(object):
-    def __init__(self):
-        self.installed = False
+class B(BaseTestHandler):
+    pass
 
-    def install(self):
-        self.installed = True
+
+class C(BaseTestHandler):
+    pass
+
+
+class D(BaseTestHandler, TaskMixin):
+    pass
 
 
 class Args(object):
@@ -136,5 +139,83 @@ class TestInstaller(unittest.TestCase):
         self.assertTrue(self.handler_b.installed)
         self.assertTrue(self.handler_c.installed)
 
+    def test_deinstall(self):
+        pass
+
     def tearDown(self):
         pass
+
+
+class TestTaskMixin(unittest.TestCase):
+
+    def setUp(self):
+        self.args_1 = Args()
+
+        self.os_name, self.os_version, self.os_id = platform.dist()
+
+        self.key_1 = get_registry_key(self.args_1)
+
+        self.handler_a = A()
+        self.handler_d = D()
+
+        self.installer = Installer()
+
+        self.installer.register('localhost', 'n', 'system', self.os_name,
+                                [self.os_version],
+                                [(self.handler_d, 'python'),
+                                 (self.handler_a, 'virtualenv')])
+
+    def test_task_out(self):
+        self.assertEqual('test\n', self.handler_d.task_out('test'))
+
+    def test_clear(self):
+        with open('fabric_tasks.txt', 'a') as file:
+            file.write('a\nb\c')
+        self.handler_d.task_file_name = 'fabric_tasks.txt'
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertNotEqual(file.readlines(), [])
+        self.handler_d.clear()
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertEqual(file.readlines(), [])
+
+    def test_finished(self):
+        self.handler_d.finished_tasks = [self.handler_d.task_out('a'), ]
+
+        self.assertTrue(self.handler_d.finished('a'))
+        self.assertFalse(self.handler_d.finished('b'))
+
+    def test_finish(self):
+        self.handler_d.task_file_name = 'fabric_tasks.txt'
+        self.handler_d.finish('d')
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertEqual(file.readlines(), ['d\n'])
+        self.handler_d.finish('a')
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertEqual(file.readlines(), ['d\n', 'a\n'])
+
+    def test_runtask(self):
+        self.installer.install(self.key_1)
+
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertEqual(file.readlines(), ['D\n'])
+
+        self.assertTrue(self.handler_a.installed)
+        self.assertTrue(self.handler_d.installed)
+
+        self.handler_a.installed = False
+        self.handler_d.installed = False
+
+        self.installer.install(self.key_1)
+
+        with open('fabric_tasks.txt', 'r') as file:
+            self.assertEqual(file.readlines(), ['D\n'])
+
+        self.assertTrue(self.handler_a.installed)
+        # false because step is mentioned in file and skipped
+        self.assertFalse(self.handler_d.installed)
+
+    def tearDown(self):
+        try:
+            os.remove('fabric_tasks.txt')
+        except OSError:
+            pass
