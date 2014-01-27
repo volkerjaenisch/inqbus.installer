@@ -1,5 +1,4 @@
 from inqbus.installer.installer import Installer
-from inqbus.installer.task import TaskMixin
 from inqbus.installer.registration import get_registry_key
 
 import platform
@@ -14,7 +13,7 @@ class A(object):
         self.installed = True
 
 
-class B(TaskMixin):
+class B(object):
     def __init__(self):
         self.installed = False
 
@@ -90,7 +89,7 @@ class TestInstaller(unittest.TestCase):
         self.installer.register('localhost', 'n', 'system', self.os_name,
                                 [self.os_version],
                                 [(self.handler_c, 'python'),
-                                 (self.handler_b, 'virtualenv')])
+                                 (self.handler_a, 'virtualenv')])
 
         self.installer.register('remote', 'y', 'anaconda', self.os_name,
                                 self.os_version,
@@ -106,6 +105,36 @@ class TestInstaller(unittest.TestCase):
         assert(self.handler_a in handlers)
         assert(self.handler_b in handlers)
         assert(len(handlers) == 2)
+
+    def test_install(self):
+        self.installer.register('localhost', 'n', 'system', self.os_name,
+                                [self.os_version],
+                                [(self.handler_c, 'python'),
+                                 (self.handler_a, 'virtualenv')])
+
+        self.installer.register('remote', 'y', 'anaconda', self.os_name,
+                                self.os_version,
+                                [(self.handler_a, 'python'),
+                                 (self.handler_b, 'python'),
+                                 (self.handler_c, 'virtualenv')])
+
+        self.installer.install('unregistered_key')
+        self.assertFalse(self.handler_a.installed)
+        self.assertFalse(self.handler_b.installed)
+        self.assertFalse(self.handler_c.installed)
+
+        self.installer.install(self.key_1)
+        self.assertTrue(self.handler_a.installed)
+        self.assertTrue(self.handler_c.installed)
+        self.assertFalse(self.handler_b.installed)
+
+        self.handler_a.installed = False
+        self.handler_c.installed = False
+
+        self.installer.install(self.key_2)
+        self.assertTrue(self.handler_a.installed)
+        self.assertTrue(self.handler_b.installed)
+        self.assertTrue(self.handler_c.installed)
 
     def tearDown(self):
         pass
