@@ -38,10 +38,7 @@ class Args(object):
         self.host_ip = ''
 
 
-class TestInstaller(unittest.TestCase):
-
-    def setUp(self):
-        pass
+class TestRegistration(unittest.TestCase):
 
     def test_get_registry_key(self):
         args = Args()
@@ -61,6 +58,54 @@ class TestInstaller(unittest.TestCase):
         expected_key = 'remote_anaconda_y_' + os_name + os_version
 
         self.assertEqual(expected_key, generated_key)
+
+
+class TestInstaller(unittest.TestCase):
+
+    def setUp(self):
+        self.args_1 = Args()
+        self.args_2 = Args()
+
+        self.args_2.host_ip = '192.168.2.1'
+        self.args_2.python = 'anaconda'
+        self.args_2.venv_name = 'test'
+
+        self.os_name, self.os_version, self.os_id = platform.dist()
+
+        self.key_1 = get_registry_key(self.args_1)
+        self.key_2 = get_registry_key(self.args_2)
+
+        self.handler_a = A()
+        self.handler_b = B()
+        self.handler_c = C()
+
+        self.installer = Installer()
+
+    def test_register(self):
+        self.installer.register('localhost', 'y', 'anaconda', self.os_name,
+                                [self.os_version, '25.3'],
+                                [(self.handler_a, 'python'),
+                                 (self.handler_b, 'virtualenv')])
+
+        self.installer.register('localhost', 'n', 'system', self.os_name,
+                                [self.os_version],
+                                [(self.handler_c, 'python'),
+                                 (self.handler_b, 'virtualenv')])
+
+        self.installer.register('remote', 'y', 'anaconda', self.os_name,
+                                self.os_version,
+                                [(self.handler_a, 'python'),
+                                 (self.handler_b, 'python'),
+                                 (self.handler_c, 'virtualenv')])
+
+        handlers = self.installer.registered_handler[self.key_1]['python']
+        assert(self.handler_c in handlers)
+        assert(len(handlers) == 1)
+
+        handlers = self.installer.registered_handler[self.key_2]['python']
+        assert(self.handler_a in handlers)
+        assert(self.handler_b in handlers)
+        assert(len(handlers) == 2)
 
     def tearDown(self):
         pass
