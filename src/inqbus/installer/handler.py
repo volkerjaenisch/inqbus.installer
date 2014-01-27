@@ -10,21 +10,25 @@ from fabric.context_managers import prefix, cd
 from fabric.contrib import files
 from fabric.operations import run, prompt
 
+
 class BaseHandler(object):
-    
+    """Baseclass for all handlers"""
+
     def install(self):
         pass
 
-class LocalGlobalPackageHandler(TaskMixin):
-    
+
+class LGP(TaskMixin):
+    """Handlerclass to install global packages on the local system."""
+
     def __init__(self, install_command, check_cmd):
         self.packages = []
         self.install_command = install_command
         self.check_cmd = check_cmd
-    
+
     def add(self, package):
         self.packages.append(package)
-    
+
     def install(self):
         packages_to_install = []
         for package in self.packages:
@@ -36,5 +40,3 @@ class LocalGlobalPackageHandler(TaskMixin):
                 print(red('Installation of global packages' +
                           'requires root password.'))
                 run(self.install_command % ' '.join(packages_to_install))
-        
-    
