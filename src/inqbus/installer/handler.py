@@ -44,26 +44,26 @@ class LGP(TaskMixin):
 
 class Anaconda(TaskMixin):
     """Handler to install anaconda"""
-    
+
     def __init__(self):
         self.home_dir = os.path.join('/', 'home', api.env.user)
         self.install_dir = os.path.join(self.home_dir, 'anaconda')
         self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b0' + \
                            '0b39d1d3.r79.cf1.rackcdn.com/Anaconda-1.8.0-' + \
                            'Linux-x86_64.sh'
-    
+
     def install(self):
         print(green('Installing Anaconda'))
-        path = prompt('Please enter the path where Anaconda should be' + 
+        path = prompt('Please enter the path where Anaconda should be' +
                       ' installed (default is %s): ' % self.install_dir)
         if path:
             self.install_dir = path
-    
+
         with api.settings(warn_only=True):
             ls_anaconda = run('ls %s' % self.install_dir)
             if ls_anaconda.return_code == 0:
                 print(yellow('It seems that Anaconda is already installed ' +
-                             'or the target directory already exists. ' + 
+                             'or the target directory already exists. ' +
                              'Skipping installation'))
                 return
             elif ls_anaconda.return_code == 2:

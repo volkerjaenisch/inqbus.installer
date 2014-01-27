@@ -9,7 +9,7 @@ import unittest
 class A(object):
     def __init__(self):
         self.installed = False
-    
+
     def install(self):
         self.installed = True
 
@@ -17,7 +17,7 @@ class A(object):
 class B(TaskMixin):
     def __init__(self):
         self.installed = False
-    
+
     def install(self):
         self.installed = True
 
@@ -25,7 +25,7 @@ class B(TaskMixin):
 class C(object):
     def __init__(self):
         self.installed = False
-    
+
     def install(self):
         self.installed = True
 
@@ -39,28 +39,28 @@ class Args(object):
 
 
 class TestInstaller(unittest.TestCase):
-    
+
     def setUp(self):
-        pass 
-    
+        pass
+
     def test_get_registry_key(self):
         args = Args()
         generated_key = get_registry_key(args)
         os_name, os_version, os_id = platform.dist()
-        
+
         expected_key = 'localhost_system_n_' + os_name + os_version
-        
+
         self.assertEqual(expected_key, generated_key)
-        
+
         args.host_ip = '192.168.2.1'
         args.python = 'anaconda'
         args.venv_name = 'test'
         generated_key = get_registry_key(args)
         os_name, os_version, os_id = platform.dist()
-        
+
         expected_key = 'remote_anaconda_y_' + os_name + os_version
-        
+
         self.assertEqual(expected_key, generated_key)
-    
+
     def tearDown(self):
         pass

@@ -43,9 +43,9 @@ args = parse_arguments()
 
 # register Handler
 maininstaller.register('localhost', 'y', 'system', 'debian',
-                        ['7.0', '7.1', '7.2', '7.3'],
-                        [(Venv(args.venv_name), 'virtualenv'),
-                         (GLP(), 'globalpackages')])
+                       ['7.0', '7.1', '7.2', '7.3'],
+                       [(Venv(args.venv_name), 'virtualenv'),
+                        (GLP(), 'globalpackages')])
 
 maininstaller.register('remote', 'n', 'anaconda', 'debian',
                        ['7.0', '7.1', '7.2', '7.3'],
