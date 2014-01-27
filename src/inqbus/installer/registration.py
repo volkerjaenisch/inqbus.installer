@@ -12,7 +12,7 @@ def get_registry_key(args):
 
     if args.host_ip and args.host_ip != 'localhost':
         host = 'remote'
-        env.host_string = host_ip
+        env.host_string = args.host_ip
     else:
         host = 'localhost'
         env.host_string = '127.0.0.1'
