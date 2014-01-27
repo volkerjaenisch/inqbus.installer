@@ -43,7 +43,7 @@ class Installer(object):
                 for handler, purpose in handlers:
                     install_steps[purpose].append(handler)
         else:
-            key = host + '_' + p + '_' + venv + '_' + os + version
+            key = host + '_' + p_version + '_' + venv + '_' + os + version
             if key in self.registered_handler:
                 install_steps = self.registered_handler[key]
             else:
