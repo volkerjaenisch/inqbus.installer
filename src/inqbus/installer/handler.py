@@ -84,7 +84,7 @@ class Anaconda(TaskMixin):
             run('wget %s' % self.install_url)
             run('chmod 755 Anaconda*')
             # FIXME: looks ugly; bash script name can be extracted from url
-            run('./Anaconda* -b -p %s' % env.ac_prefix)
+            run('./Anaconda* -b -p %s' % self.install_dir)
         print(green('Successfully installed Anaconda'))
 
 
@@ -122,11 +122,11 @@ class AnacondaVenv(TaskMixin):
         self.name = name
         self.env_name = env_name
         self.workon_home = os.path.join(anaconda_path, 'envs')
-    
+
     def install(self):
         print(green('Creating virtualenv "%s"' % self.env_name))
         if files.exists(os.path.join(self.workon_home, self.env_name)):
             print(yellow('Virtual environment already exists. ' +
                          'Skipping creation.'))
         else:
-            run('conda create -n %s anaconda' % env.venv_name)
+            run('conda create -n %s anaconda' % self.env_name)
