@@ -154,3 +154,57 @@ class AnacondaPip(TaskMixin):
 
     def add(self, package):
         self.packages.append(package)
+
+
+class GitClone(object):
+    """Handler to clone project from github"""
+
+    def __init__(self, name, repo_name, repo, branch, path):
+        self.name = name
+        self.repo_path = os.path.join(path, repo_name)
+        self.repo = repo
+        self.branch = branch
+        self.repo_name = repo_name
+
+        self.packages = []
+
+    def install(self):
+        # check if we may already have a cloned repo here
+        if files.exists(self.repo_path):
+            print(yellow('Found existing %s repository' % self.repo_name))
+            # check if the repo is valid by trying to pull
+            print(yellow('Try to update it'))
+            with prefix("cd " + self.repo_path):
+                run('git pull')
+            print(green('%s update successfull' % self.repo_name))
+        else:
+            print(green('Fetching %s repository from github' % self.repo_name))
+            run('git clone -b %s %s' % (self.branch, self.repo))
+
+
+class AnacondaProject(object):
+    """Handler install a github-project in AnacondaVenv"""
+
+    def __init__(self, name, repo_name, ana_path, env_name):
+        self.name = name
+        self.repo_path = os.path.join(ana_path, 'envs', env_name, repo_name)
+        self.repo_name = repo_name
+        self.workon_cmd = 'source activate %s' % env_name
+        self.env_bin_path = os.path.join(ana_path, 'bin')
+
+        self.packages = []
+
+    def install(self):
+        print(green('Installing %s packages' % self.repo_name))
+        for package in self.packages:
+            print(green('Installing %s package: %s' % (self.repo_name,
+                                                       package)))
+            with prefix('cd %s' % self.env_bin_path):
+                with prefix(self.workon_cmd):
+                    with prefix("cd " + self.repo_path):
+                        with prefix("cd " + package):
+                            run('python setup.py develop')
+        print(green('%s Installation successfull' % self.repo_name))
+
+    def add(self, package):
+        self.packages.append(package)
