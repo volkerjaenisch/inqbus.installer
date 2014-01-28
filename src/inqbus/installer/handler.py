@@ -114,3 +114,19 @@ class UpdateBashrc(TaskMixin):
 
     def add(self, addline, testline=None):
         self.content_to_add.append((testline, addline))
+
+class AnacondaVenv(TaskMixin):
+    """Handler to create a virtualenv using Anaconda"""
+
+    def __init__(self, name, env_name, anaconda_path):
+        self.name = name
+        self.env_name = env_name
+        self.workon_home = os.path.join(anaconda_path, 'envs')
+    
+    def install(self):
+        print(green('Creating virtualenv "%s"' % self.env_name))
+        if files.exists(os.path.join(self.workon_home, self.env_name)):
+            print(yellow('Virtual environment already exists. ' +
+                         'Skipping creation.'))
+        else:
+            run('conda create -n %s anaconda' % env.venv_name)
