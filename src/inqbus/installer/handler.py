@@ -183,7 +183,7 @@ class GitClone(object):
 
 
 class AnacondaProject(object):
-    """Handler install a github-project in AnacondaVenv"""
+    """Handler install a project in AnacondaVenv"""
 
     def __init__(self, name, repo_name, ana_path, env_name):
         self.name = name
@@ -208,3 +208,25 @@ class AnacondaProject(object):
 
     def add(self, package):
         self.packages.append(package)
+
+
+class VenvWrapper(TaskMixin):
+    
+    def __init__(self, name, env_name):
+        self.name = name
+        self.env_name = env_name
+        self.env_path = os.path.join(os.environ.get('WORKON_HOME'), env_name)
+    
+    def install(self):
+        print(green('Creating virtualenv "%s"' % self.env_name))
+        if files.exists(self.env_path):
+            print(yellow('Virtual environment already exists. ' +
+                         'Skipping creation.'))
+        else:
+            # FIXME:
+            # Fatal error: run() received nonzero return code 127 while executing!
+
+            # Requested: mkvirtualenv elan
+            # Executed: /bin/bash -l -c "mkvirtualenv elan"
+
+            run('mkvirtualenv %s' % self.env_name)
