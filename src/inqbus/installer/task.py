@@ -15,12 +15,12 @@ class TaskMixin(object):
         except OSError:
             self.clear()
             self.finished_tasks = []
-        if self.finished(func.__class__.__name__):
-            print('Task ' + func.__class__.__name__ +
-                  'is already done! Skipping')
+        if self.finished(func.name):
+            print('Task "' + func.name +
+                  '" is already done! Skipping')
         else:
             func.install()
-            self.finish(func.__class__.__name__)
+            self.finish(func.name)
 
     def task_out(self, task):
         return task + '\n'

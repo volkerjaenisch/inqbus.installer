@@ -14,6 +14,9 @@ from fabric.operations import run, prompt
 class BaseHandler(object):
     """Baseclass for all handlers"""
 
+    def __init__(self, name):
+        self.name = name
+
     def install(self):
         pass
 
@@ -21,7 +24,8 @@ class BaseHandler(object):
 class LGP(TaskMixin):
     """Handlerclass to install global packages on the local system."""
 
-    def __init__(self, install_command, check_cmd):
+    def __init__(self, name, install_command, check_cmd):
+        self.name = name
         self.packages = []
         self.install_command = install_command
         self.check_cmd = check_cmd
@@ -45,7 +49,8 @@ class LGP(TaskMixin):
 class Anaconda(TaskMixin):
     """Handler to install anaconda"""
 
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.home_dir = os.path.join('/', 'home', api.env.user)
         self.install_dir = os.path.join(self.home_dir, 'anaconda')
         self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b0' + \
@@ -86,7 +91,8 @@ class Anaconda(TaskMixin):
 class UpdateBashrc(TaskMixin):
     """Handler to add content to the .bashrc"""
 
-    def __init__(self):
+    def __init__(self, name):
+        self.name = name
         self.home_dir = os.path.join('/', 'home', api.env.user)
         self.bashdir = os.path.join(self.home_dir, '.bashrc')
         self.content_to_add = []
