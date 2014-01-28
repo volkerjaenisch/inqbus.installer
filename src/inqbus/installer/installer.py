@@ -7,8 +7,8 @@ class Installer(object):
         # dictionary to hold handler
         self.registered_handler = {}
         # list to hold all purposes for which a step can be added
-        self.purposes = ['globalpackages', 'python', 'virtualenv',
-                         'pythonpackages', 'getcurrentproject', 'updatebashrc']
+        self.purposes = ['globalpackages', 'python', 'updatebashrc',
+                         'virtualenv', 'pythonpackages', 'getcurrentproject']
 
     def install(self, registry_key):
         if registry_key in self.registered_handler:
