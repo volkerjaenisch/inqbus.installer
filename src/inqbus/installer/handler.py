@@ -1,11 +1,13 @@
-import os
-import sys
-import subprocess
-
 from task import TaskMixin
+
+import os
+import platform
+import sys
+from contextlib import contextmanager
 
 from fabric.colors import green, red, yellow
 from fabric import api
+from fabric.api import env
 from fabric.context_managers import prefix, cd
 from fabric.contrib import files
 from fabric.operations import run, prompt
@@ -115,6 +117,7 @@ class UpdateBashrc(TaskMixin):
     def add(self, addline, testline=None):
         self.content_to_add.append((testline, addline))
 
+
 class AnacondaVenv(TaskMixin):
     """Handler to create a virtualenv using Anaconda"""
 
@@ -130,3 +133,24 @@ class AnacondaVenv(TaskMixin):
                          'Skipping creation.'))
         else:
             run('conda create -n %s anaconda' % self.env_name)
+
+
+class AnacondaPip(TaskMixin):
+    """Handler to install pip-packages in virtualenv using Anaconda"""
+
+    def __init__(self, name, env_name, ana_path):
+        self.name = name
+        self.env_name = env_name
+        self.packages = []
+        self.workon_cmd = 'source activate %s' % env_name
+        self.env_bin_path = os.path.join(ana_path, 'bin')
+
+    def install(self):
+        with prefix('cd %s' % self.env_bin_path):
+            with prefix(self.workon_cmd):
+                for package in self.packages:
+                    print(green('Installing %s via pip' % package))
+                    run('pip install %s' % package)
+
+    def add(self, package):
+        self.packages.append(package)
