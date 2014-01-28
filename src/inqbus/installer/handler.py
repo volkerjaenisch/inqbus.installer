@@ -81,3 +81,30 @@ class Anaconda(TaskMixin):
             # FIXME: looks ugly; bash script name can be extracted from url
             run('./Anaconda* -b -p %s' % env.ac_prefix)
         print(green('Successfully installed Anaconda'))
+
+
+class UpdateBashrc(TaskMixin):
+    """Handler to add content to the .bashrc"""
+
+    def __init__(self):
+        self.home_dir = os.path.join('/', 'home', api.env.user)
+        self.bashdir = os.path.join(self.home_dir, '.bashrc')
+        self.content_to_add = []
+
+    def install(self):
+        for testline, addline in self.content_to_add:
+            if not files.contains(self.bashdir, testline) or not testline:
+                print(green('Going to add\n:' + addline))
+                files.append(self.bashdir, addline)
+            else:
+                print('Seems like the file was already updated.')
+                print(yellow('Please check, if settings are correct.'))
+                print('.bashrc should contain:')
+                print(addline)
+        self.updatebash()
+
+    def updatebash(self):
+        run('source %s' % self.bashdir)
+
+    def add(self, addline, testline=None):
+        self.content_to_add.append((testline, addline))
