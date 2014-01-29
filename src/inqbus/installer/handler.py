@@ -211,6 +211,7 @@ class AnacondaProject(object):
 
 
 class VenvWrapper(TaskMixin):
+    """Handler to create a virtualenv using Virtualenv-Wrapper"""
     
     def __init__(self, name, env_name):
         self.name = name
@@ -233,6 +234,7 @@ class VenvWrapper(TaskMixin):
 
 
 class WrapperPip(TaskMixin):
+    """Handler to install Python-Packages using Virtualenv-Wrapper"""
 
     def __init__(self, name, env_name):
         self.name = name
@@ -244,6 +246,33 @@ class WrapperPip(TaskMixin):
             for package in self.packages:
                 print(green('Installing %s via pip' % package))
                 run('pip install %s' % package)
+
+    def add(self, package):
+        self.packages.append(package)
+
+
+class VenvProject(object):
+    """Handler install a project using Virtuanv-Wrapper"""
+
+    def __init__(self, name, repo_name, env_name):
+        self.name = name
+        self.repo_path = os.path.join(os.environ.get('WORKON_HOME'), env_name,
+                                      repo_name)
+        self.repo_name = repo_name
+        self.workon_cmd = 'workon %s' % env_name
+
+        self.packages = []
+
+    def install(self):
+        print(green('Installing %s packages' % self.repo_name))
+        for package in self.packages:
+            print(green('Installing %s package: %s' % (self.repo_name,
+                                                       package)))
+            with prefix(self.workon_cmd):
+                with prefix("cd " + self.repo_path):
+                    with prefix("cd " + package):
+                        run('python setup.py develop')
+        print(green('%s Installation successfull' % self.repo_name))
 
     def add(self, package):
         self.packages.append(package)
