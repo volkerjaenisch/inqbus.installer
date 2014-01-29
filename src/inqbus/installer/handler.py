@@ -1,8 +1,6 @@
 from task import TaskMixin
 
 import os
-import platform
-import sys
 from contextlib import contextmanager
 
 from fabric.colors import green, red, yellow
@@ -216,7 +214,7 @@ class VenvWrapper(TaskMixin):
     def __init__(self, name, env_name):
         self.name = name
         self.env_name = env_name
-        self.env_path = os.path.join(os.environ.get('WORKON_HOME'), env_name)
+        self.env_path = os.path.join(env.workon_home, env_name)
     
     def install(self):
         print(green('Creating virtualenv "%s"' % self.env_name))
@@ -224,13 +222,10 @@ class VenvWrapper(TaskMixin):
             print(yellow('Virtual environment already exists. ' +
                          'Skipping creation.'))
         else:
-            # FIXME:
-            # Fatal error: run() received nonzero return code 127 while executing!
-
-            # Requested: mkvirtualenv elan
-            # Executed: /bin/bash -l -c "mkvirtualenv elan"
-
-            run('mkvirtualenv %s' % self.env_name)
+            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
+                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
+                    with prefix("export WORKON_HOME=%s" % env.workon_home):
+                        run('mkvirtualenv %s' % self.env_name)
 
 
 class WrapperPip(TaskMixin):
@@ -242,10 +237,13 @@ class WrapperPip(TaskMixin):
         self.workon_cmd = 'workon %s' % env_name
 
     def install(self):
-        with prefix(self.workon_cmd):
-            for package in self.packages:
-                print(green('Installing %s via pip' % package))
-                run('pip install %s' % package)
+        for package in self.packages:
+            print(green('Installing %s via pip' % package))
+            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
+                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
+                    with prefix("export WORKON_HOME=%s" % env.workon_home):
+                        with prefix(self.workon_cmd):
+                            run('pip install %s' % package)
 
     def add(self, package):
         self.packages.append(package)
@@ -256,7 +254,7 @@ class VenvProject(object):
 
     def __init__(self, name, repo_name, env_name):
         self.name = name
-        self.repo_path = os.path.join(os.environ.get('WORKON_HOME'), env_name,
+        self.repo_path = os.path.join(env.workon_home, env_name,
                                       repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'workon %s' % env_name
@@ -268,10 +266,13 @@ class VenvProject(object):
         for package in self.packages:
             print(green('Installing %s package: %s' % (self.repo_name,
                                                        package)))
-            with prefix(self.workon_cmd):
-                with prefix("cd " + self.repo_path):
-                    with prefix("cd " + package):
-                        run('python setup.py develop')
+            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
+                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
+                    with prefix("export WORKON_HOME=%s" % env.workon_home):
+                        with prefix(self.workon_cmd):
+                            with prefix("cd " + self.repo_path):
+                                with prefix("cd " + package):
+                                    run('python setup.py develop')
         print(green('%s Installation successfull' % self.repo_name))
 
     def add(self, package):
