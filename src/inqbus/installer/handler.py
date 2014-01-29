@@ -230,3 +230,20 @@ class VenvWrapper(TaskMixin):
             # Executed: /bin/bash -l -c "mkvirtualenv elan"
 
             run('mkvirtualenv %s' % self.env_name)
+
+
+class WrapperPip(TaskMixin):
+
+    def __init__(self, name, env_name):
+        self.name = name
+        self.packages = []
+        self.workon_cmd = 'workon %s' % env_name
+
+    def install(self):
+        with prefix(self.workon_cmd):
+            for package in self.packages:
+                print(green('Installing %s via pip' % package))
+                run('pip install %s' % package)
+
+    def add(self, package):
+        self.packages.append(package)
