@@ -163,6 +163,7 @@ class GitClone(object):
         self.repo = repo
         self.branch = branch
         self.repo_name = repo_name
+        self.path = path
 
         self.packages = []
 
@@ -177,7 +178,8 @@ class GitClone(object):
             print(green('%s update successfull' % self.repo_name))
         else:
             print(green('Fetching %s repository from github' % self.repo_name))
-            run('git clone -b %s %s' % (self.branch, self.repo))
+            with prefix('cd %s' % self.path):
+                run('git clone -b %s %s' % (self.branch, self.repo))
 
 
 class AnacondaProject(object):
