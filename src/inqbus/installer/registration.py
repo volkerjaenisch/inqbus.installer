@@ -1,4 +1,5 @@
 import platform
+import os
 
 from argparse import ArgumentParser
 from fabric.api import env
@@ -18,9 +19,9 @@ def get_registry_key(args):
         env.host_string = '127.0.0.1'
 
     os_name, os_version, os_id = platform.dist()
-    os = os_name + os_version
+    os_key = os_name + os_version
 
-    registry_key = host + '_' + args.python + '_' + venv + '_' + os
+    registry_key = host + '_' + args.python + '_' + venv + '_' + os_key
     return registry_key
 
 
