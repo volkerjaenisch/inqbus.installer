@@ -23,8 +23,8 @@ class BaseHandler(object):
         pass
 
 
-class LGP(TaskMixin):
-    """Handlerclass to install global packages on the local system."""
+class Global(TaskMixin):
+    """Handlerclass to install global packages."""
 
     def __init__(self, name, install_command, check_cmd):
         self.name = name
