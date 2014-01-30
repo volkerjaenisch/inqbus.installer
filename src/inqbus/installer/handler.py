@@ -41,7 +41,7 @@ class Global(TaskMixin):
             if output.return_code != 0:
                 packages_to_install.append(package)
         if len(packages_to_install) > 0:
-                print(red('Installation of global packages' +
+                print(red('Installation of global packages ' +
                           'requires root password.'))
                 run(self.install_command % ' '.join(packages_to_install))
 
@@ -279,3 +279,23 @@ class VenvProject(object):
 
     def add(self, package):
         self.packages.append(package)
+
+
+class VenvCommand(TaskMixin):
+    """Handler to run commands within the virtualenv"""
+
+    def __init__(self, name, env_name):
+        self.name = name
+        self.commands = []
+        self.workon_cmd = 'workon %s' % env_name
+
+    def add(self, command):
+        self.commands.append(command)
+
+    def install(self):
+        for command in self.commands:
+            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
+                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
+                    with prefix("export WORKON_HOME=%s" % env.workon_home):
+                        with prefix(self.workon_cmd):
+                            run(command)
