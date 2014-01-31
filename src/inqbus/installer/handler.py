@@ -259,12 +259,13 @@ class WrapperPip(TaskMixin):
 class VenvProject(object):
     """Handler install a project using Virtuanv-Wrapper"""
 
-    def __init__(self, name, repo_name, env_name):
+    def __init__(self, name, repo_name, env_name, additionalcmd=None):
         self.name = name
         self.repo_path = os.path.join(env.workon_home, env_name,
                                       repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'workon %s' % env_name
+        self.additionalcmd = additionalcmd
 
         self.packages = []
 
@@ -279,7 +280,11 @@ class VenvProject(object):
                         with prefix(self.workon_cmd):
                             with prefix("cd " + self.repo_path):
                                 with prefix("cd " + package):
-                                    run('python setup.py develop')
+                                    if self.additionalcmd:
+                                        with prefix(self.additionalcmd):
+                                            run('python setup.py develop')
+                                    else:
+                                        run('python setup.py develop')
         print(green('%s Installation successfull' % self.repo_name))
 
     def add(self, package):
