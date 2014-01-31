@@ -36,10 +36,13 @@ def get_registry_key(args):
             with prefix('cd %s' % home):
                 workon_home = run('cat .bashrc | grep WORKON_HOME')
     
-    if workon_home:
-        with prefix(workon_home):
-            env.workon_home = run('echo $WORKON_HOME')
-    else:
+    try:
+        if workon_home:
+            with prefix(workon_home):
+                env.workon_home = run('echo $WORKON_HOME')
+        else:
+            env.workon_home = "~/.virtualenvs"
+    except UnboundLocalError:
         env.workon_home = "~/.virtualenvs"
     
     print(green("WORKON_HOME is %s" % env.workon_home))
