@@ -233,10 +233,11 @@ class VenvWrapper(TaskMixin):
 class WrapperPip(TaskMixin):
     """Handler to install Python-Packages using Virtualenv-Wrapper"""
 
-    def __init__(self, name, env_name):
+    def __init__(self, name, env_name, additionalcmd=None):
         self.name = name
         self.packages = []
         self.workon_cmd = 'workon %s' % env_name
+        self.additionalcmd = additionalcmd
 
     def install(self):
         for package in self.packages:
@@ -245,7 +246,11 @@ class WrapperPip(TaskMixin):
                 with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
                     with prefix("export WORKON_HOME=%s" % env.workon_home):
                         with prefix(self.workon_cmd):
-                            run('pip install %s' % package)
+                            if self.additionalcmd:
+                                with prefix(self.additionalcmd):
+                                    run('pip install %s' % package)
+                            else:
+                                run('pip install %s' % package)
 
     def add(self, package):
         self.packages.append(package)
