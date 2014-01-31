@@ -53,9 +53,16 @@ class Anaconda(TaskMixin):
         self.name = name
         self.home_dir = os.path.join('/', 'home', api.env.user)
         self.install_dir = os.path.join(self.home_dir, 'anaconda')
-        self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba79b0' + \
-                           '0b39d1d3.r79.cf1.rackcdn.com/Anaconda-1.8.0-' + \
-                           'Linux-x86_64.sh'
+        self.system = prompt('Do you want to install 64-bit-version[64] or ' + 
+                             '32-bit-version[32]? (default is 64): ')
+        if '32' in self.system:
+            self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba' + \
+                               '79b00b39d1d3.r79.cf1.rackcdn.com/' + \
+                               'Anaconda-1.8.0-Linux-x86.sh'
+        else:
+            self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba' + \
+                               '79b00b39d1d3.r79.cf1.rackcdn.com/' + \
+                               'Anaconda-1.8.0-Linux-x86_64.sh'
 
     def install(self):
         print(green('Installing Anaconda'))
@@ -122,6 +129,7 @@ class AnacondaVenv(TaskMixin):
     def __init__(self, name, env_name, anaconda_path):
         self.name = name
         self.env_name = env_name
+        self.anaconda_path = anaconda_path
         self.workon_home = os.path.join(anaconda_path, 'envs')
 
     def install(self):
@@ -130,7 +138,8 @@ class AnacondaVenv(TaskMixin):
             print(yellow('Virtual environment already exists. ' +
                          'Skipping creation.'))
         else:
-            run('conda create -n %s anaconda' % self.env_name)
+            with prefix('export PATH=%s/bin:$PATH' % self.anaconda_path):
+                run('conda create -n %s anaconda' % self.env_name)
 
 
 class AnacondaPip(TaskMixin):
