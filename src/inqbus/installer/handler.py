@@ -24,7 +24,7 @@ class BaseHandler(object):
 class Global(TaskMixin):
     """Handlerclass to install global packages."""
 
-    def __init__(self, name, install_command, check_cmd):
+    def __init__(self, name, install_command, check_cmd=None):
         self.name = name
         self.packages = []
         self.install_command = install_command
@@ -36,14 +36,29 @@ class Global(TaskMixin):
     def install(self):
         packages_to_install = []
         for package in self.packages:
-            with api.settings(warn_only=True):
-                output = run(self.check_cmd % package)
-            if output.return_code != 0:
-                packages_to_install.append(package)
+            if self.check_cmd:
+                with api.settings(warn_only=True):
+                    output = run(self.check_cmd % package)
+                if output.return_code != 0:
+                    packages_to_install.append(package)
+            else:
+                packages_to_install = self.packages
         if len(packages_to_install) > 0:
                 print(red('Installation of global packages ' +
                           'requires root password.'))
                 run(self.install_command % ' '.join(packages_to_install))
+
+
+class RunGlobal(TaskMixin):
+
+    def __init__(self, name, command):
+        self.name = name
+        self.command = command
+    
+    def install(self):
+        print(red('Running global command:\n%s' % self.command ))
+        with api.settings(warn_only=True):
+            run(self.command)
 
 
 class Anaconda(TaskMixin):
@@ -107,7 +122,7 @@ class UpdateBashrc(TaskMixin):
     def install(self):
         for testline, addline in self.content_to_add:
             if not files.contains(self.bashdir, testline) or not testline:
-                print(green('Going to add\n:' + addline))
+                print(green('Going to add:\n' + addline))
                 files.append(self.bashdir, addline)
             else:
                 print('Seems like the file was already updated.')
