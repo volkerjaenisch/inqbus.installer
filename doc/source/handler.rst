@@ -77,6 +77,7 @@ asking for the value of the attribute *install_dir*.
 
   from inqbus.installer.handler import Anaconda
   
+  
   anaconda = Anaconda('anaconda')
   
   # handler uses the path to anaconda
@@ -112,6 +113,24 @@ WORKON_HOME-setting for the virtualenvwrapper.
 
 AnacondaVenv(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
+This class can be used to create a virtual environment with Anaconda. It takes
+a name for the TaskMixin as first argument, the name of the virtual environment
+as the second one and the path to the anconda-installation.
+
+The following example shows, how it can be used in combination with the 
+Anaconda-Class and parsed arguments.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import Anaconda, AnacondaVenv
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  anaconda = Anaconda('anaconda')
+      
+  anavenv = AnacondaVenv('anavenv', args.venv_name, anaconda.install_dir)
 
 AnacondaPip(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
