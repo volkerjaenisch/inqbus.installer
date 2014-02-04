@@ -20,8 +20,8 @@ necessary parameters and one optional.
 
 #. The first necessary argument is a string representing the name used by the
    TaskMixin-Class.
-#. The second necessary argument is a string is the command which should be
-   used to install the package. This command should contain the string 
+#. The second necessary argument is a string which is the command which should
+   be used to install the package. This command should contain the string 
    formatting operator '%s' on the place where the package-name should be
    entered.
 #. The optional argument is also a command containing the formatting operator
@@ -36,8 +36,10 @@ and the virtualenvwrapper with aptitude.
 
 .. code-block:: python
 
-  global = Global('global',
-                  'su -c "aptitude update && aptitude install %s"',
+  from inqbus.installer.handler import Global
+  
+  
+  global = Global('global', 'su -c "aptitude update && aptitude install %s"', 
                   'dpkg -s %s')
   
   global.add('python-pip')
@@ -46,9 +48,42 @@ and the virtualenvwrapper with aptitude.
 
 RunGlobal(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^
+This class can be used to run single global commands. It takes two 
+necessary parameters.
+
+#. The first necessary argument is a string representing the name used by the
+   TaskMixin-Class.
+#. The second necessary argument is a string which is the command.
+
+The following example shows, how this class is used to uninstall the 
+virtualenvwrapper via pip.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import RunGlobal
+  
+  
+  runglobal = RunGlobal('runglobal', 'su -c "pip uninstall virtualenvwrapper"')
 
 Anaconda(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^
+This class can be used to install `Anacona`_. It just takes the name used by
+TaskMixin-Class, but during the installation it asks the user where anaconda
+should be installed.
+This information is required by other handlers, too. You can receive it by
+asking for the value of the attribute *install_dir*.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import Anaconda
+  
+  anaconda = Anaconda('anaconda')
+  
+  # handler uses the path to anaconda
+  
+  handler = Handler('test', anaconda.install_dir)
+
+.. _Anaconda: https://store.continuum.io/cshop/anaconda/
 
 UpdateBashrc(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
