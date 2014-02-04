@@ -55,7 +55,50 @@ For the handler-registration you first have to build an installer-instance.::
   
   installer = Installer()
 
+then you can register your handlers. For the registration you have to call the
+register-method. This method takes a lot of arguments to specify the when the
+handlers should be run.
 
+#. Host: As host-argument you have to add the string 'localhost' or 'remote'.
+#. Virtual environment: As virtualenv-argument you have to add 'y' for using
+   one or 'n' for using no virtual environment.
+#. Python: The next argument represents the used python. You can add 'system
+   'or 'anaconda'.
+#. Operating System: The next argument is the name of the operating system,
+   e.g. 'debian' or 'ubuntu'.
+#. Operating System Versions: This argument can be a list or a string. Here
+   you can specify the different versions of the operating system like '7.3'
+   or ['7.0', '7.1', '7.2', '7.3'] for debian.
+#. The Handler: The last argument is a list of handler. Each element of this
+   list is a tuple with two values. The first one is the handler-instance and
+   the second one is the purpose. If you use the default settings, there the
+   following purposes:
+                  
+   * 'globalpackages',
+   * 'python',
+   * 'updatebashrc',
+   * 'virtualenv',
+   * 'pythonpackages',
+   * 'getcurrentproject'
+
+   You can register more than one handler for one purpose or even no handler 
+   for not needed purposes.
+
+A total registration could look like this: ::
+
+  from inqbus.installer.installer import Installer
+  
+  
+  installer = Installer()
+  
+  handler1 = SomeHandler()
+  handler2 = AnotherHandler('test')
+
+  installer.register('localhost', 'y', 'anaconda', 'debian',
+                     ['7.0', '7.1', '7.2', '7.3'],
+                     [(handler1, 'globalpackages'),
+                      (handler2, 'python')]
 
 Start Installation
 ^^^^^^^^^^^^^^^^^^
+
