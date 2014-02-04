@@ -13,6 +13,7 @@ Contents:
    
    about
    howtouse
+   handler
 
 Indices and tables
 ==================
