@@ -25,14 +25,26 @@ the arguments given by the commandline and returns a registry_key, which
 describes the system, where the installation is running. It configures some
 fabric-settings, too.
 
-Your deployment-file should look like this to do these things.::
+The fabric-settings made are setting the user and the host which are necessary
+to install something with a fabric-script. On the other side it checks if the 
+user has set a value for environment-variable *WORKON_HOME*. If the user has 
+set this value, it is read and safed in *env.workon_home*. In the other case
+*env.workon_home* is set to a default value.
+
+This example shows, how your deployment-file could look and how you can access
+the value of *env.workon_home*.
+
+.. code-block:: python
 
   from inqbus.installer.registration import parse_arguments, get_registry_key
-  
+  from fabric.api import env
   
   args = parse_arguments()
   
   registry_key = get_registry_key(args)
+  
+  # to get WORKON_HOME
+  workon_home = env.workon_home
 
 Configure Handler
 ^^^^^^^^^^^^^^^^^
