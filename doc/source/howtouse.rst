@@ -97,8 +97,34 @@ A total registration could look like this: ::
   installer.register('localhost', 'y', 'anaconda', 'debian',
                      ['7.0', '7.1', '7.2', '7.3'],
                      [(handler1, 'globalpackages'),
-                      (handler2, 'python')]
+                      (handler2, 'python')])
 
 Start Installation
 ^^^^^^^^^^^^^^^^^^
 
+To start the installation, you just have to call the install-method with the 
+key as argument.::
+
+  from inqbus.installer.registration import parse_arguments, get_registry_key
+  from inqbus.installer.installer import Installer
+  
+  
+  args = parse_arguments()
+  
+  registry_key = get_registry_key(args)
+  
+  installer = Installer()
+  
+  handler1 = SomeHandler()
+  handler2 = AnotherHandler('test')
+
+  installer.register('localhost', 'y', 'anaconda', 'debian',
+                     ['7.0', '7.1', '7.2', '7.3'],
+                     [(handler1, 'globalpackages'),
+                      (handler2, 'python')])
+                      
+  installer.install(registry_key)
+
+In this method the installer just takes the registered handlers which match the
+settings given by the registry_key. Then it goes through all purposes and
+starts their installation-process.
