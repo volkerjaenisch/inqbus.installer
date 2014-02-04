@@ -37,8 +37,25 @@ Your deployment-file should look like this to do these things.::
 Configure Handler
 ^^^^^^^^^^^^^^^^^
 
+Configuring the handler means to build a valid instance of an handler-class.
+Therefore you can use the predefined handler of this package or even build your
+own ones. For more information about this, read the part: :doc:`handler`.
+
 Register Handler
 ^^^^^^^^^^^^^^^^
+
+Configuring a handler does not mean that the handler will be exectuted.
+Therefore you have to register it to your installer-instance. More information
+about the installer-class you can find here: :doc:`installer`.
+
+For the handler-registration you first have to build an installer-instance.::
+
+  from inqbus.installer.installer import Installer
+  
+  
+  installer = Installer()
+
+
 
 Start Installation
 ^^^^^^^^^^^^^^^^^^
