@@ -11,6 +11,15 @@ from fabric.contrib import files
 from fabric.operations import run, prompt
 
 
+@contextmanager
+def prepare_venv():
+    """Function to prepare working with virtualenvironment."""
+    with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
+        with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
+            with prefix("export WORKON_HOME=%s" % env.workon_home):
+                yield    
+
+
 class BaseHandler(object):
     """Baseclass for all handlers"""
 
@@ -107,6 +116,7 @@ class Anaconda(TaskMixin):
             run('chmod 755 Anaconda*')
             # FIXME: looks ugly; bash script name can be extracted from url
             run('./Anaconda* -b -p %s' % self.install_dir)
+            run('rm ./Anaconda*')
         print(green('Successfully installed Anaconda'))
 
 
@@ -160,15 +170,14 @@ class AnacondaVenv(TaskMixin):
 class AnacondaPip(TaskMixin):
     """Handler to install pip-packages in virtualenv using Anaconda"""
 
-    def __init__(self, name, env_name, ana_path):
+    def __init__(self, name, env_name):
         self.name = name
         self.env_name = env_name
         self.packages = []
         self.workon_cmd = 'source activate %s' % env_name
-        self.env_bin_path = os.path.join(ana_path, 'bin')
 
     def install(self):
-        with prefix('cd %s' % self.env_bin_path):
+        with prefix('export PATH=%s/bin:$PATH' % self.anaconda_path):
             with prefix(self.workon_cmd):
                 for package in self.packages:
                     print(green('Installing %s via pip' % package))
@@ -214,7 +223,6 @@ class AnacondaProject(object):
         self.repo_path = os.path.join(ana_path, 'envs', env_name, repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'source activate %s' % env_name
-        self.env_bin_path = os.path.join(ana_path, 'bin')
 
         self.packages = []
 
@@ -223,7 +231,7 @@ class AnacondaProject(object):
         for package in self.packages:
             print(green('Installing %s package: %s' % (self.repo_name,
                                                        package)))
-            with prefix('cd %s' % self.env_bin_path):
+            with prefix('export PATH=%s/bin:$PATH' % self.anaconda_path):
                 with prefix(self.workon_cmd):
                     with prefix("cd " + self.repo_path):
                         with prefix("cd " + package):
@@ -248,10 +256,8 @@ class VenvWrapper(TaskMixin):
             print(yellow('Virtual environment already exists. ' +
                          'Skipping creation.'))
         else:
-            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
-                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
-                    with prefix("export WORKON_HOME=%s" % env.workon_home):
-                        run('mkvirtualenv %s' % self.env_name)
+            with prepare_venv():
+                run('mkvirtualenv %s' % self.env_name)
 
 
 class WrapperPip(TaskMixin):
@@ -266,22 +272,20 @@ class WrapperPip(TaskMixin):
     def install(self):
         for package in self.packages:
             print(green('Installing %s via pip' % package))
-            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
-                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
-                    with prefix("export WORKON_HOME=%s" % env.workon_home):
-                        with prefix(self.workon_cmd):
-                            if self.additionalcmd:
-                                with prefix(self.additionalcmd):
-                                    run('pip install %s' % package)
-                            else:
-                                run('pip install %s' % package)
+            with prepare_venv():
+                with prefix(self.workon_cmd):
+                    if self.additionalcmd:
+                        with prefix(self.additionalcmd):
+                            run('pip install %s' % package)
+                    else:
+                        run('pip install %s' % package)
 
     def add(self, package):
         self.packages.append(package)
 
 
 class VenvProject(object):
-    """Handler install a project using Virtuanv-Wrapper"""
+    """Handler install a project using Virtualenv-Wrapper"""
 
     def __init__(self, name, repo_name, env_name, additionalcmd=None):
         self.name = name
@@ -298,17 +302,15 @@ class VenvProject(object):
         for package in self.packages:
             print(green('Installing %s package: %s' % (self.repo_name,
                                                        package)))
-            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
-                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
-                    with prefix("export WORKON_HOME=%s" % env.workon_home):
-                        with prefix(self.workon_cmd):
-                            with prefix("cd " + self.repo_path):
-                                with prefix("cd " + package):
-                                    if self.additionalcmd:
-                                        with prefix(self.additionalcmd):
-                                            run('python setup.py develop')
-                                    else:
-                                        run('python setup.py develop')
+            with prepare_venv():
+                with prefix(self.workon_cmd):
+                    with prefix("cd " + self.repo_path):
+                        with prefix("cd " + package):
+                            if self.additionalcmd:
+                                with prefix(self.additionalcmd):
+                                    run('python setup.py develop')
+                            else:
+                                run('python setup.py develop')
         print(green('%s Installation successfull' % self.repo_name))
 
     def add(self, package):
@@ -328,8 +330,6 @@ class VenvCommand(TaskMixin):
 
     def install(self):
         for command in self.commands:
-            with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
-                with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
-                    with prefix("export WORKON_HOME=%s" % env.workon_home):
-                        with prefix(self.workon_cmd):
-                            run(command)
+            with prepare_venv():
+                with prefix(self.workon_cmd):
+                    run(command)
