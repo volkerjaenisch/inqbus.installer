@@ -87,6 +87,28 @@ asking for the value of the attribute *install_dir*.
 
 UpdateBashrc(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
+This class can be used to add content to the *.bashrc*. This class takes only
+the name used for the TaskMixin-Class as argument.
+
+To add a line to the *.bashrc* you can use the add-method of this class.
+This method takes two arguments. The first one is the line which should be
+added. The second one is optional and is a string. This parameter is a
+testline.
+
+If the *.bashrc* contains the testline, then the line would not be added. In
+the other case it would.
+
+The following example shows, how this class is used to add the
+WORKON_HOME-setting for the virtualenvwrapper.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import UpdateBashrc
+  
+  
+  bash = UpdateBashrc('bashrc')
+  
+  bash.add('export WORKON_HOME=~/.virtualenvs', 'WORKON_HOME')
 
 AnacondaVenv(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
