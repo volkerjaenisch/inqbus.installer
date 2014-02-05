@@ -170,10 +170,11 @@ class AnacondaVenv(TaskMixin):
 class AnacondaPip(TaskMixin):
     """Handler to install pip-packages in virtualenv using Anaconda"""
 
-    def __init__(self, name, env_name):
+    def __init__(self, name, env_name, anaconda_path):
         self.name = name
         self.env_name = env_name
         self.packages = []
+        self.anaconda_path = anaconda_path
         self.workon_cmd = 'source activate %s' % env_name
 
     def install(self):
@@ -223,6 +224,7 @@ class AnacondaProject(object):
         self.repo_path = os.path.join(ana_path, 'envs', env_name, repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'source activate %s' % env_name
+        self.anaconda_path = ana_path
 
         self.packages = []
 
