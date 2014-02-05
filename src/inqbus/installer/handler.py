@@ -219,9 +219,9 @@ class GitClone(object):
 class AnacondaProject(object):
     """Handler install a project in AnacondaVenv"""
 
-    def __init__(self, name, repo_name, ana_path, env_name):
+    def __init__(self, name, repo_name, repo_path, ana_path, env_name):
         self.name = name
-        self.repo_path = os.path.join(ana_path, 'envs', env_name, repo_name)
+        self.repo_path = os.path.join(repo_path, repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'source activate %s' % env_name
         self.anaconda_path = ana_path
@@ -289,10 +289,10 @@ class WrapperPip(TaskMixin):
 class VenvProject(object):
     """Handler install a project using Virtualenv-Wrapper"""
 
-    def __init__(self, name, repo_name, env_name, additionalcmd=None):
+    def __init__(self, name, repo_name, repo_path, env_name, 
+                 additionalcmd=None):
         self.name = name
-        self.repo_path = os.path.join(env.workon_home, env_name,
-                                      repo_name)
+        self.repo_path = os.path.join(repo_path, repo_name)
         self.repo_name = repo_name
         self.workon_cmd = 'workon %s' % env_name
         self.additionalcmd = additionalcmd
