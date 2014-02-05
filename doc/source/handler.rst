@@ -134,12 +134,87 @@ Anaconda-Class and parsed arguments.
 
 AnacondaPip(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
+This handler can be used to install python-packages within a virtual
+environment created with anaconda. As arguments it takes a name, the name
+of the virtual environment and the path where your Anaconda is installed.
+
+You can add packages by using the add-method of this class. All given packages 
+will be installed using pip.
+
+The following example shows, how you can use this class in combination with the
+parsed commandline-arguments and the class which installed Anaconda.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import Anaconda, AnacondaPip
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  anaconda = Anaconda('anaconda')
+      
+  anapip = AnacondaPip('anapip', args.venv_name, anaconda.install_dir)
+  
+  anapip.add('django')
+  anapip.add('django-debug-toolbar')
 
 GitClone(object)
 ^^^^^^^^^^^^^^^^
+This handler can be used to clone or to update a project from `github`_.
+
+When this handler is used, the installer first checks if the directory already
+exists. If that's the case, the project just will be updated by running
+*git pull*. In the other case the project will be cloned.
+
+This handler takes five arguments.
+
+The first one is the name. The second one is the name of the repository. The 
+third one is the link from github, where the repository is and the fourth one
+is the branch you want to clone. The last argument is the path where the 
+repository should be saved on the computer. 
+
+In the given directory will be a directory created with the given
+repository-name and this directory will contain all the important files.   
+
+.. _github: https://github.com/
 
 AnacondaProject(object)
 ^^^^^^^^^^^^^^^^^^^^^^^
+This handler can be used to install the packages of the current project in
+python development-mode. The project is installed in the virtual environment 
+created with Anaconda.
+
+Therefore it takes five arguments. The first one is the name. 
+
+The next to one specify the directory where your project is saved. The second 
+argument is the name of your project and also the name of the project's 
+root-directory. The third one is the path to the directory, where the 
+root-directory is found.
+
+The last two arguments specify your anaconda environment. The first one is the 
+path, where your anaconda is installed and the second one is the name of the
+virtual environment.
+
+With the add-method of the class, you can add paths to the *setup.py*-files.
+
+The following example shows, how it can be used.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import Anaconda, AnacondaProject
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  anaconda = Anaconda('anaconda')
+  
+  project = AnacondaProject('ana_pro', '~/projects/', 'currentproject',
+                            anaconda.install_dir, args.venv_name)
+
+  project.add('firstpackage')
+  project.add('path/to/secondpackage')
 
 VenvWrapper(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
