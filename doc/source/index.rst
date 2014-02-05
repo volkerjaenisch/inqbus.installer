@@ -14,6 +14,7 @@ Contents:
    about
    howtouse
    handler
+   taskmixin
 
 Indices and tables
 ==================
