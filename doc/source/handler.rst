@@ -7,8 +7,8 @@ of the installation. You can use the included handlers or write your own ones.
 Included Handlers
 -----------------
 
-There are a lot of included handlers included in the installer-package. 
-You can import from *inqbus.installer.handler*. 
+There are a lot of included handlers in the installer-package. 
+You can import them from *inqbus.installer.handler*. 
 
 Some of them are inheriting from :doc:`taskmixin` which handles skipping 
 already completed steps, when the installation is restarted.
@@ -18,21 +18,23 @@ Global(TaskMixin)
 This class can be used to install different global packages. It takes two 
 necessary parameters and one optional.
 
-#. The first necessary argument is a string representing the name used by the
-   TaskMixin-Class.
-#. The second necessary argument is a string which is the command which should
-   be used to install the package. This command should contain the string 
-   formatting operator '%s' on the place where the package-name should be
-   entered.
-#. The optional argument is also a command containing the formatting operator
-   '%s' instead of the package-name. This command is used to check if the
-   package is installed before it is installed by the other command. If it is
-   not given, all packages will be installed without testing.
+The first necessary argument is a string representing the name used by the
+TaskMixin-Class.
+
+The second necessary argument is a string which is the command that should
+be used to install the package. This command should contain the string 
+formatting operator '%s' on the place where the package-name should be
+entered.
+
+The optional argument is also a command containing the formatting operator
+'%s' instead of the package-name. This command is used to check if the
+package is installed before it is installed by the other command. If it is
+not given, all packages will be installed without testing.
 
 To add a package, you can use the add-method given by the class.
 
-The following example shows, how this class is used to install pip, virtualenv
-and the virtualenvwrapper with aptitude.
+The following example shows, how this class is used to install the packages 
+pip, virtualenv and the virtualenvwrapper with aptitude.
 
 .. code-block:: python
 
@@ -51,9 +53,10 @@ RunGlobal(TaskMixin)
 This class can be used to run single global commands. It takes two 
 necessary parameters.
 
-#. The first necessary argument is a string representing the name used by the
-   TaskMixin-Class.
-#. The second necessary argument is a string which is the command.
+The first necessary argument is a string representing the name used by the
+TaskMixin-Class.
+
+The second necessary argument is a string representing the command.
 
 The following example shows, how this class is used to uninstall the 
 virtualenvwrapper via pip.
@@ -70,6 +73,7 @@ Anaconda(TaskMixin)
 This class can be used to install `Anacona`_. It just takes the name used by
 TaskMixin-Class, but during the installation it asks the user where anaconda
 should be installed.
+
 This information is required by other handlers, too. You can receive it by
 asking for the value of the attribute *install_dir*.
 
