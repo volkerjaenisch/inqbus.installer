@@ -29,13 +29,13 @@ def get_registry_key(args):
     os_version = run('lsb_release -r').split().pop()
     os_key = os_name + os_version
     print(green("Operating System is %s" % os_key))
-    
+
     if args.python == 'system' and args.venv_name:
         home = os.path.join('/', 'home', api.env.user)
         with api.settings(warn_only=True):
             with prefix('cd %s' % home):
                 workon_home = run('cat .bashrc | grep WORKON_HOME')
-    
+
     try:
         if workon_home:
             with prefix(workon_home):
@@ -44,7 +44,7 @@ def get_registry_key(args):
             env.workon_home = "~/.virtualenvs"
     except UnboundLocalError:
         env.workon_home = "~/.virtualenvs"
-    
+
     print(green("WORKON_HOME is %s" % env.workon_home))
 
     registry_key = host + '_' + args.python + '_' + venv + '_' + os_key

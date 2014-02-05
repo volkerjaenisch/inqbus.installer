@@ -17,7 +17,7 @@ def prepare_venv():
     with prefix("source /etc/bash_completion.d/virtualenvwrapper"):
         with prefix("source /usr/local/bin/virtualenvwrapper.sh"):
             with prefix("export WORKON_HOME=%s" % env.workon_home):
-                yield    
+                yield
 
 
 class BaseHandler(object):
@@ -63,9 +63,9 @@ class RunGlobal(TaskMixin):
     def __init__(self, name, command):
         self.name = name
         self.command = command
-    
+
     def install(self):
-        print(red('Running global command:\n%s' % self.command ))
+        print(red('Running global command:\n%s' % self.command))
         with api.settings(warn_only=True):
             run(self.command)
 
@@ -77,7 +77,7 @@ class Anaconda(TaskMixin):
         self.name = name
         self.home_dir = os.path.join('/', 'home', api.env.user)
         self.install_dir = os.path.join(self.home_dir, 'anaconda')
-        self.system = prompt('Do you want to install 64-bit-version[64] or ' + 
+        self.system = prompt('Do you want to install 64-bit-version[64] or ' +
                              '32-bit-version[32]? (default is 64): ')
         if '32' in self.system:
             self.install_url = '09c8d0b2229f813c1b93-c95ac804525aac4b6dba' + \
@@ -246,12 +246,12 @@ class AnacondaProject(object):
 
 class VenvWrapper(TaskMixin):
     """Handler to create a virtualenv using Virtualenv-Wrapper"""
-    
+
     def __init__(self, name, env_name):
         self.name = name
         self.env_name = env_name
         self.env_path = os.path.join(env.workon_home, env_name)
-    
+
     def install(self):
         print(green('Creating virtualenv "%s"' % self.env_name))
         if files.exists(self.env_path):
@@ -289,7 +289,7 @@ class WrapperPip(TaskMixin):
 class VenvProject(object):
     """Handler install a project using Virtualenv-Wrapper"""
 
-    def __init__(self, name, repo_name, repo_path, env_name, 
+    def __init__(self, name, repo_name, repo_path, env_name,
                  additionalcmd=None):
         self.name = name
         self.repo_path = os.path.join(repo_path, repo_name)
