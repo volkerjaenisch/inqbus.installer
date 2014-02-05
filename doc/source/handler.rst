@@ -167,12 +167,12 @@ When this handler is used, the installer first checks if the directory already
 exists. If that's the case, the project just will be updated by running
 *git pull*. In the other case the project will be cloned.
 
-This handler takes five arguments.
+This handler takes four arguments.
 
-The first one is the name. The second one is the name of the repository. The 
-third one is the link from github, where the repository is and the fourth one
-is the branch you want to clone. The last argument is the path where the 
-repository should be saved on the computer. 
+The first one is the name of the repository. The second one is the link from 
+github, where the repository is and the third one is the branch you want to
+clone. The last argument is the path where the repository should be saved
+on the computer. 
 
 In the given directory will be a directory created with the given
 repository-name and this directory will contain all the important files.   
@@ -185,11 +185,11 @@ This handler can be used to install the packages of the current project in
 python development-mode. The project is installed in the virtual environment 
 created with Anaconda.
 
-Therefore it takes five arguments. The first one is the name. 
+Therefore it takes four arguments.
 
-The next to one specify the directory where your project is saved. The second 
+The next to one specify the directory where your project is saved. The first 
 argument is the name of your project and also the name of the project's 
-root-directory. The third one is the path to the directory, where the 
+root-directory. The second one is the path to the directory, where the 
 root-directory is found.
 
 The last two arguments specify your anaconda environment. The first one is the 
@@ -210,7 +210,7 @@ The following example shows, how it can be used.
   
   anaconda = Anaconda('anaconda')
   
-  project = AnacondaProject('ana_pro', '~/projects/', 'currentproject',
+  project = AnacondaProject('~/projects/', 'currentproject',
                             anaconda.install_dir, args.venv_name)
 
   project.add('firstpackage')
@@ -269,15 +269,14 @@ This handler can be used to install the packages of the current project in
 python development-mode. The project is installed in the virtual environment 
 created with the virtualenvwrapper.
 
-Therefore it takes four necessary arguments and one optional. 
-The first one is the name. 
+Therefore it takes three necessary arguments and one optional. 
 
-The next to one specify the directory where your project is saved. The second 
-argument is the name of your project and also the name of the project's 
-root-directory. The third one is the path to the directory, where the 
+The first two arguments specify the directory where your project is saved. 
+The first one is the name of the project and also the name of the project's 
+root-directory. The second one is the path to the directory, where the 
 root-directory is found.
 
-The last necessary arguments specify your environment by getting the name.
+The last necessary arguments specifies your environment by getting the name.
 
 The optional argument is a command which has to be executed before the 
 installation of the packages starts.
@@ -294,8 +293,7 @@ The following example shows, how it can be used.
   
   args = parse_arguments()
   
-  project = VenvProject('venv_pro', '~/projects/', 'currentproject',
-                        args.venv_name)
+  project = VenvProject('~/projects/', 'currentproject', args.venv_name)
 
   project.add('firstpackage')
   project.add('path/to/secondpackage')
