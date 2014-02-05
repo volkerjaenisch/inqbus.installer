@@ -15,6 +15,7 @@ Contents:
    howtouse
    handler
    taskmixin
+   installer
 
 Indices and tables
 ==================
