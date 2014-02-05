@@ -39,12 +39,12 @@ and the virtualenvwrapper with aptitude.
   from inqbus.installer.handler import Global
   
   
-  global = Global('global', 'su -c "aptitude update && aptitude install %s"', 
-                  'dpkg -s %s')
+  globalpackage = Global('global', 'su -c "aptitude update && aptitude install %s"', 
+                         'dpkg -s %s')
   
-  global.add('python-pip')
-  global.add('python-virtualenv')
-  global.add('virtualenvwrapper')
+  globalpackage.add('python-pip')
+  globalpackage.add('python-virtualenv')
+  globalpackage.add('virtualenvwrapper')
 
 RunGlobal(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^
