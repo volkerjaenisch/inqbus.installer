@@ -218,15 +218,108 @@ The following example shows, how it can be used.
 
 VenvWrapper(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
+This handler can be used to create a virtual environment using the 
+virtualenvwrapper.
+
+It just gets a name and the name of the virtual environment. You can use it 
+this way:
+
+.. code-block:: python
+
+  from inqbus.installer.handler import VenvWrapper
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  createvenv = VenvWrapper('create_venv', args.venv_name)
 
 WrapperPip(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^
+This handler can be used to install python-packages in a virtual environment
+which was created with the virtualenvwrapper.
+
+It takes two necessary arguments and one optional. The first necessary argument
+is the name used by the TaskMixin-Class. The second one is the name of the 
+virtual environment.
+
+The optional argument is a command which has to be executed before the 
+installation of the packages starts.
+
+You can add packages by using the add-method of this class. All given packages 
+will be installed using pip.
+
+You can use it this way:
+
+.. code-block:: python
+
+  from inqbus.installer.handler import WrapperPip
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  venv = WrapperPip('venv_pip', args.venv_name)
+  
+  venv.add('django')
 
 VenvProject(object)
 ^^^^^^^^^^^^^^^^^^^
+This handler can be used to install the packages of the current project in
+python development-mode. The project is installed in the virtual environment 
+created with the virtualenvwrapper.
+
+Therefore it takes four necessary arguments and one optional. 
+The first one is the name. 
+
+The next to one specify the directory where your project is saved. The second 
+argument is the name of your project and also the name of the project's 
+root-directory. The third one is the path to the directory, where the 
+root-directory is found.
+
+The last necessary arguments specify your environment by getting the name.
+
+The optional argument is a command which has to be executed before the 
+installation of the packages starts.
+
+With the add-method of the class, you can add paths to the *setup.py*-files.
+
+The following example shows, how it can be used.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import VenvProject
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  project = VenvProject('venv_pro', '~/projects/', 'currentproject',
+                        args.venv_name)
+
+  project.add('firstpackage')
+  project.add('path/to/secondpackage')
 
 VenvCommand(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
+This is a simple handler to run commands within the virtual environment
+created by the virtualenvwrapper.
+
+It just takes a name and the name of the virtual environment. The commands can
+be added by using the add-method.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import VenvCommand
+  from inqbus.installer.registration import parse_arguments
+  
+  
+  args = parse_arguments()
+  
+  command = VenvProject('venv_command', args.venv_name)
+  
+  command.add('echo "first command"')
+  command.add('echo "second command"')
 
 Adding own Handlers
 -------------------
