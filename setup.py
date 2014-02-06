@@ -18,8 +18,8 @@ setup(name='inqbus.installer',
         "Programming Language :: Python",
                   ],
       keywords='installation python deployment',
-      author='Volker Jaenisch',
-      author_email='volker.jaenisch@inqbus.de',
+      author='Volker Jaenisch, Sandra Rum',
+      author_email='volker.jaenisch@inqbus.de, sandra.rum@inqbus.de',
       url='http://inqbus.de',
       download_url='',
       license='other',
@@ -29,6 +29,7 @@ setup(name='inqbus.installer',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'fabric'
           # -*- Extra requirements: -*-
       ],
       entry_points="""
