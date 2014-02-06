@@ -25,11 +25,11 @@ the arguments given by the commandline and returns a registry_key, which
 describes the system, where the installation is running. It configures some
 fabric-settings, too.
 
-The fabric-settings made are setting the user and the host which are necessary
+The fabric-settings include setting the user and the host which are necessary
 to install something with a fabric-script. On the other side it checks if the 
-user has set a value for environment-variable *WORKON_HOME*. If the user has 
-set this value, it is read and safed in *env.workon_home*. In the other case
-*env.workon_home* is set to a default value.
+user has set a value for the environment-variable *WORKON_HOME*. If this is the
+case has set this value, it is read and safed in *env.workon_home*. In the 
+other case *env.workon_home* is set to a default value.
 
 This example shows, how your deployment-file could look and how you can access
 the value of *env.workon_home*.
@@ -67,15 +67,15 @@ For the handler-registration you first have to build an installer-instance.::
   
   installer = Installer()
 
-then you can register your handlers. For the registration you have to call the
-register-method. This method takes a lot of arguments to specify the when the
+Then you can register your handlers. For the registration you have to call the
+register-method. This method takes a lot of arguments to specify when the
 handlers should be run.
 
 #. Host: As host-argument you have to add the string 'localhost' or 'remote'.
 #. Virtual environment: As virtualenv-argument you have to add 'y' for using
    one or 'n' for using no virtual environment.
-#. Python: The next argument represents the used python. You can add 'system
-   'or 'anaconda'.
+#. Python: The next argument represents the used python. You can add 'system' 
+   or 'anaconda'.
 #. Operating System: The next argument is the name of the operating system,
    e.g. 'debian' or 'ubuntu'.
 #. Operating System Versions: This argument can be a list or a string. Here
@@ -83,8 +83,8 @@ handlers should be run.
    or ['7.0', '7.1', '7.2', '7.3'] for debian.
 #. The Handler: The last argument is a list of handler. Each element of this
    list is a tuple with two values. The first one is the handler-instance and
-   the second one is the purpose. If you use the default settings, there the
-   following purposes:
+   the second one is the purpose. If you use the default settings, there are 
+   the following purposes:
                   
    * 'globalpackages',
    * 'python',
