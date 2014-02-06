@@ -92,7 +92,7 @@ asking for the value of the attribute *install_dir*.
 
 UpdateBashrc(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
-This class can be used to add content to the *.bashrc*. This class takes only
+This class can be used to add content to the *.bashrc*. It takes only
 the name used for the TaskMixin-Class as argument.
 
 To add a line to the *.bashrc* you can use the add-method of this class.
@@ -119,7 +119,7 @@ AnacondaVenv(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^^
 This class can be used to create a virtual environment with Anaconda. It takes
 a name for the TaskMixin as first argument, the name of the virtual environment
-as the second one and the path to the anconda-installation.
+as the second one and the path to the anconda-installation as third one.
 
 The following example shows, how it can be used in combination with the 
 Anaconda-Class and parsed arguments.
@@ -140,7 +140,7 @@ AnacondaPip(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
 This handler can be used to install python-packages within a virtual
 environment created with anaconda. As arguments it takes a name, the name
-of the virtual environment and the path where your Anaconda is installed.
+of the virtual environment and the path where Anaconda is installed.
 
 You can add packages by using the add-method of this class. All given packages 
 will be installed using pip.
@@ -171,15 +171,15 @@ When this handler is used, the installer first checks if the directory already
 exists. If that's the case, the project just will be updated by running
 *git pull*. In the other case the project will be cloned.
 
-This handler takes four arguments.
+It takes four arguments.
 
 The first one is the name of the repository. The second one is the link from 
-github, where the repository is and the third one is the branch you want to
+github, where the repository is located and the third one is the branch you want to
 clone. The last argument is the path where the repository should be saved
 on the computer. 
 
-In the given directory will be a directory created with the given
-repository-name and this directory will contain all the important files.   
+In the given directory another directory will be created with the given
+repository-name and this directory will contain all the cloned files.   
 
 .. _github: https://github.com/
 
@@ -191,7 +191,7 @@ created with Anaconda.
 
 Therefore it takes four arguments.
 
-The next to one specify the directory where your project is saved. The first 
+The first two one specify the directory where your project is saved. The first 
 argument is the name of your project and also the name of the project's 
 root-directory. The second one is the path to the directory, where the 
 root-directory is found.
@@ -223,7 +223,7 @@ The following example shows, how it can be used.
 VenvWrapper(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^^
 This handler can be used to create a virtual environment using the 
-virtualenvwrapper.
+`virtualenvwrapper`_.
 
 It just gets a name and the name of the virtual environment. You can use it 
 this way:
@@ -237,6 +237,8 @@ this way:
   args = parse_arguments()
   
   createvenv = VenvWrapper('create_venv', args.venv_name)
+
+.. _virtualenvwrapper: http://virtualenvwrapper.readthedocs.org/en/latest/
 
 WrapperPip(TaskMixin)
 ^^^^^^^^^^^^^^^^^^^^^
@@ -280,7 +282,7 @@ The first one is the name of the project and also the name of the project's
 root-directory. The second one is the path to the directory, where the 
 root-directory is found.
 
-The last necessary arguments specifies your environment by getting the name.
+The last necessary argument specifies your environment by giving the name.
 
 The optional argument is a command which has to be executed before the 
 installation of the packages starts.
@@ -325,9 +327,11 @@ be added by using the add-method.
 
 Adding own Handlers
 -------------------
+For your deployment you can create your own handlers and register them to the
+installer. Therefore it has to fulfill some simple conditions.
 
 Each handler has to provide a install-method. It can also provide additional
-functions especially the __init__-method.::
+functions especially the __init__-method, if you need them.::
 
   class Handler(object):
   
@@ -337,8 +341,9 @@ functions especially the __init__-method.::
 
 Some special handlers can inherit from :doc:`taskmixin`. This class keeps care
 of steps which are already done in the installation. So if the installation
-breaks the completed steps will be skipped. Therefore you have to add the
-__init__-method to take an argument which is called self.name.::
+breaks the completed steps will be skipped. Therefore you have to add an 
+argument which is called self.name. One way to do this is setting it in the
+__init__-method.::
 
   from inqbus.installer.task import TaskMixin
   
