@@ -4,6 +4,8 @@ How to use
 How to install
 --------------
 
+This package can be downloaded from the PyPi.
+
 How to setup an installation
 ----------------------------
 
