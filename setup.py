@@ -6,6 +6,7 @@ setup(name='inqbus.installer',
       version=version,
       description="Installs your python code local or remote",
       long_description=open("README.txt").read() + "\n" +
+                       open("LICENSE.txt").read() + "\n" +
                        open("HISTORY.txt").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
