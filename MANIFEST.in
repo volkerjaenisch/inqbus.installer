@@ -1,0 +1,6 @@
+include doc/source/*
+include doc/make.bat
+include doc/Makefile
+include README.txt
+include HISTORY.txt
+include LICENSE.txt
