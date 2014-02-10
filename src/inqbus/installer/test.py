@@ -10,6 +10,7 @@ class Venv(TaskMixin):
 
     def __init__(self, env_name):
         self.env_name = env_name
+        self.name = 'test2'
 
     def install(self):
         print('virtualenv would be created. Name: %s' % self.env_name)
@@ -18,6 +19,9 @@ class Venv(TaskMixin):
 class GLP(TaskMixin):
     """Pseudohandler representing the Handler to install global packages on
     the local system"""
+    
+    def __init__(self):
+        self.name = 'test'
 
     def install(self):
         print('Global packages would be installed locally.')

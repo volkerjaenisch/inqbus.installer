@@ -29,7 +29,8 @@ class C(BaseTestHandler):
 
 
 class D(BaseTestHandler, TaskMixin):
-    pass
+
+    self.name = 'D'
 
 
 class Args(object):
