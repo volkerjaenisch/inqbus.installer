@@ -70,3 +70,8 @@ def parse_arguments():
 
     args = parser.parse_args()
     return args
+
+
+args = parse_arguments()
+
+registry_key = get_registry_key(args)
