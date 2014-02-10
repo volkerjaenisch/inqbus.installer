@@ -1,17 +1,61 @@
 Inqbus.installer
 ================
 
-Is a tiny lib that finds the absolute path of the python
-main application. It works robust under linux, windows, virtualenv, py2exe.
+inqbus.installer is a modular framework for building installation routines for 
+python based software.
 
+It features:
 
-Documentation
-=============
+* local and remote installation
+* different python flavours
+* different os/ os versions
+* virtual env out of the box
+
+So if you have a broad variety of platfforms, versions and python flavours 
+your code has to support, inqbus.installer may be the framework to use.
 
 How to install
 --------------
 
 This package can be downloaded from the PyPi.
+
+Requirements
+------------
+
+This package requires:
+
+* python>=2.7
+* fabric
+
+How it works
+------------
+
+The inqbus.installer follows a simple working order to install your 
+python-project. This working order starts with preparing the Client with
+all necessary global packages.
+
+The next step is to install Anaconda-Python it was chosen. 
+
+After this it creates the virtual environment depending on the chosen python 
+with all necessary Python-Packages. 
+
+As last step it will clone or update your current project and install it in
+development-mode.::
+
+  $ python test.py -v elan
+  ...
+  Working on: globalpackages
+  ...
+  Working on: python
+  ...
+  Working on: updatebashrc
+  ...
+  Working on: virtualenv
+  ...
+  Working on: pythonpackages
+  ...
+  Working on: getcurrentproject
+  ...
 
 How to setup an installation
 ----------------------------
