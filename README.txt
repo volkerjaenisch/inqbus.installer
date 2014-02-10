@@ -31,16 +31,7 @@ How it works
 ------------
 
 The inqbus.installer follows a simple working order to install your 
-python-project. This working order starts with preparing the Client with
-all necessary global packages.
-
-The next step is to install Anaconda-Python if it was chosen. 
-
-After this it creates the virtual environment depending on the chosen python 
-with all necessary Python-Packages. 
-
-As last step it will clone or update your current project and install it in
-development-mode.::
+python-project.::
 
   $ python test.py -v elan
   ...
@@ -57,6 +48,17 @@ development-mode.::
   Working on: getcurrentproject
   ...
 
+This working order starts with preparing the Client with
+all necessary global packages.
+
+The next step is to install Anaconda-Python if it was chosen. 
+
+After this it creates the virtual environment depending on the chosen python 
+with all necessary Python-Packages. 
+
+As last step it will clone or update your current project and install it in
+development-mode.
+
 How to use inqbus.installer
 ---------------------------
 
@@ -70,19 +72,7 @@ There are three optional parameters you can use:
 * *-v [name]* for using a virtual environment  with the given name - default 
   is not using one
 
-All parameters are read in automatically. To use them, just import *args*
-from the registration.
-
-when the commandlinearguments are parsed, some fabric-settings are done, too.
-
-The fabric-settings include setting the user and the host which are necessary
-to install something with a fabric-script. On the other side it checks if the 
-user has set a value for the environment-variable *WORKON_HOME*. If this is the
-case has set this value, it is read and safed in *env.workon_home*. In the 
-other case *env.workon_home* is set to a default value.
-
-This example shows, how your deployment-file could look and how you can access
-the value of *env.workon_home*.
+You can use them in your deployment-file like this:
 
 .. code-block:: python
 
@@ -91,6 +81,20 @@ the value of *env.workon_home*.
   
   # to get WORKON_HOME
   workon_home = env.workon_home
+
+All parameters are read in automatically. To use them, just import *args*
+from the registration. 
+
+With the parameters a *registry_key* is build and set
+automatically, too. This is used to select the correct handlers to install.
+
+When the commandlinearguments are parsed, some fabric-settings are done, too.
+
+The fabric-settings include setting the user and the host which are necessary
+to install something with a fabric-script. On the other side it checks if the 
+user has set a value for the environment-variable *WORKON_HOME*. If this is the
+case has set this value, it is read and safed in *env.workon_home*. In the 
+other case *env.workon_home* is set to a default value.
 
 Handlers
 ^^^^^^^^
@@ -113,9 +117,6 @@ example.
 
 On the other hand you can write your own handlers.
 
-Each handler has to provide a install-method. It can also provide additional
-functions especially the __init__-method, if you need them.
-
 .. code-block:: python
 
   class Handler(object):
@@ -124,11 +125,10 @@ functions especially the __init__-method, if you need them.
           # do something
           pass
 
-Some special handlers can inherit from the TaskMixin-Class. This class keeps 
-care of steps which are already done in the installation. So if the 
-installation breaks the completed steps will be skipped. Therefore you have 
-to add an argument which is called self.name. One way to do this is setting 
-it in the __init__-method.
+Each handler has to provide a install-method. It can also provide additional
+functions especially the __init__-method, if you need them.
+
+Some special handlers can inherit from the TaskMixin-Class. 
 
 .. code-block:: python
 
@@ -143,6 +143,11 @@ it in the __init__-method.
       def install(self):
           # do something
           pass
+
+This class keeps care of steps which are already done in the installation. 
+So if the installation breaks the completed steps will be skipped. Therefore 
+you have to add an argument which is called self.name. One way to do this is 
+setting it in the __init__-method.
 
 Configure Handler
 ^^^^^^^^^^^^^^^^^
@@ -170,18 +175,23 @@ Therefore you have to register it to the installer-instance.
 .. code-block:: python
 
   from inqbus.installer.installer import installer
-  from inqbus.installer.handler import RunGlobal
+  from inqbus.installer.handler import RunGlobal, Global
   
   
   runglobal = RunGlobal('runglobal', 'su -c "pip uninstall virtualenvwrapper"')
-  handler1 = SomeHandler()
   
+  globalpackage = Global('global', 'su -c "aptitude update && aptitude install %s"', 
+                         'dpkg -s %s')
+  
+  globalpackage.add('python-pip')
+  globalpackage.add('python-virtualenv')
+  globalpackage.add('virtualenvwrapper')  
 
   installer.register(host='localhost', venv='y', p_version='anaconda',
                      os='debian',
                      versions=['7.0', '7.1', '7.2', '7.3'],
                      handlers=[(runglobal, 'globalpackages'),
-                               (handler1, 'python')])
+                               (globalpackage, 'globalpackages'),])
 
 The example above shows how to register handler.
 
@@ -226,7 +236,7 @@ To start the installation, you just have to call the install-method.
   installer.install()
 
 In this method the installer just takes the registered handlers which match the
-settings automatically given by the registry_key. Then it goes through all 
+settings automatically given by the *registry_key*. Then it goes through all 
 purposes and starts their installation-process.
 
 Complete Documentation
