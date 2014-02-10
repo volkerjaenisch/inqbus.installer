@@ -36,8 +36,8 @@ The Key
 -------
 
 When the installation is started the *Installer.install* function is called
-with a special key. This key is build by the Function *get_registry_key* which 
-is part of *inqbus.installer.registration*.
+with a special key. This key is build by the Function *get_registry_key* and 
+set automatically. Building the key is part of *inqbus.installer.registration*.
 
 The key contains all information the process needs including:
 

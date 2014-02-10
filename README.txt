@@ -34,7 +34,7 @@ The inqbus.installer follows a simple working order to install your
 python-project. This working order starts with preparing the Client with
 all necessary global packages.
 
-The next step is to install Anaconda-Python it was chosen. 
+The next step is to install Anaconda-Python if it was chosen. 
 
 After this it creates the virtual environment depending on the chosen python 
 with all necessary Python-Packages. 
@@ -57,26 +57,23 @@ development-mode.::
   Working on: getcurrentproject
   ...
 
-How to setup an installation
-----------------------------
+How to use inqbus.installer
+---------------------------
 
 Read Parameters
 ^^^^^^^^^^^^^^^
 
-Before you can start setting up your installation, you have to read the
-commandline parameters. There are three optional parameters you can use:
+There are three optional parameters you can use:
 
 * *-H [user@ip]* for a remote installation - default is *'localhost'*
 * *-p [system|anaconda]* for using a special python - default is *'system'*
 * *-v [name]* for using a virtual environment  with the given name - default 
   is not using one
 
-You can read these parameters using the method *parse_arguments*.
+All parameters are read in automatically. To use them, just import *args*
+from the registration.
 
-After this you have to run the method *get_registry_key*. This method takes
-the arguments given by the commandline and returns a registry_key, which
-describes the system, where the installation is running. It configures some
-fabric-settings, too.
+when the commandlinearguments are parsed, some fabric-settings are done, too.
 
 The fabric-settings include setting the user and the host which are necessary
 to install something with a fabric-script. On the other side it checks if the 
@@ -89,15 +86,63 @@ the value of *env.workon_home*.
 
 .. code-block:: python
 
-  from inqbus.installer.registration import parse_arguments, get_registry_key
+  from inqbus.installer.registration import args
   from fabric.api import env
-  
-  args = parse_arguments()
-  
-  registry_key = get_registry_key(args)
   
   # to get WORKON_HOME
   workon_home = env.workon_home
+
+Handlers
+^^^^^^^^
+
+One main part of inqbus.installer are the handlers. There are a lot of 
+predefined handlers, e.g. to install global packages, like the following 
+example.
+
+.. code-block:: python
+
+  from inqbus.installer.handler import Global
+  
+  
+  globalpackage = Global('global', 'su -c "aptitude update && aptitude install %s"', 
+                         'dpkg -s %s')
+  
+  globalpackage.add('python-pip')
+  globalpackage.add('python-virtualenv')
+  globalpackage.add('virtualenvwrapper')
+
+On the other hand you can write your own handlers.
+
+Each handler has to provide a install-method. It can also provide additional
+functions especially the __init__-method, if you need them.
+
+.. code-block:: python
+
+  class Handler(object):
+  
+      def install(self):
+          # do something
+          pass
+
+Some special handlers can inherit from the TaskMixin-Class. This class keeps 
+care of steps which are already done in the installation. So if the 
+installation breaks the completed steps will be skipped. Therefore you have 
+to add an argument which is called self.name. One way to do this is setting 
+it in the __init__-method.
+
+.. code-block:: python
+
+  from inqbus.installer.task import TaskMixin
+  
+  
+  class Handler(TaskMixin):
+  
+      def __init__(self, name):
+          self.name = name
+  
+      def install(self):
+          # do something
+          pass
 
 Configure Handler
 ^^^^^^^^^^^^^^^^^
@@ -106,34 +151,57 @@ Configuring the handler means to build a valid instance of an handler-class.
 Therefore you can use the predefined handler of this package or even build your
 own ones. 
 
+.. code-block:: python
+
+  from inqbus.installer.handler import RunGlobal
+  
+  
+  runglobal = RunGlobal('runglobal', 'su -c "pip uninstall virtualenvwrapper"')
+
+The example above just shows how you can configure one build-in handler. 
+this handler just takes a command and runs it globally.
+
 Register Handler
 ^^^^^^^^^^^^^^^^
 
 Configuring a handler does not mean that the handler will be exectuted.
-Therefore you have to register it to your installer-instance. 
+Therefore you have to register it to the installer-instance. 
 
-For the handler-registration you first have to build an installer-instance.::
+.. code-block:: python
 
-  from inqbus.installer.installer import Installer
+  from inqbus.installer.installer import installer
+  from inqbus.installer.handler import RunGlobal
   
   
-  installer = Installer()
+  runglobal = RunGlobal('runglobal', 'su -c "pip uninstall virtualenvwrapper"')
+  handler1 = SomeHandler()
+  
+
+  installer.register(host='localhost', venv='y', p_version='anaconda',
+                     os='debian',
+                     versions=['7.0', '7.1', '7.2', '7.3'],
+                     handlers=[(runglobal, 'globalpackages'),
+                               (handler1, 'python')])
+
+The example above shows how to register handler.
+
+For the handler-registration you first have to import the installer-instance.
 
 Then you can register your handlers. For the registration you have to call the
 register-method. This method takes a lot of arguments to specify when the
 handlers should be run.
 
-#. Host: As host-argument you have to add the string 'localhost' or 'remote'.
-#. Virtual environment: As virtualenv-argument you have to add 'y' for using
+#. host: As host-argument you have to add the string 'localhost' or 'remote'.
+#. venv: As virtualenv-argument you have to add 'y' for using
    one or 'n' for using no virtual environment.
-#. Python: The next argument represents the used python. You can add 'system' 
+#. p_version: The next argument represents the used python. You can add 'system' 
    or 'anaconda'.
-#. Operating System: The next argument is the name of the operating system,
+#. os: The next argument is the name of the operating system,
    e.g. 'debian' or 'ubuntu'.
-#. Operating System Versions: This argument can be a list or a string. Here
+#. versions: This argument can be a list or a string. Here
    you can specify the different versions of the operating system like '7.3'
    or ['7.0', '7.1', '7.2', '7.3'] for debian.
-#. The Handler: The last argument is a list of handler. Each element of this
+#. handlers: The last argument is a list of handler. Each element of this
    list is a tuple with two values. The first one is the handler-instance and
    the second one is the purpose. If you use the default settings, there are 
    the following purposes:
@@ -148,50 +216,18 @@ handlers should be run.
    You can register more than one handler for one purpose or even no handler 
    for not needed purposes.
 
-A total registration could look like this: ::
-
-  from inqbus.installer.installer import Installer
-  
-  
-  installer = Installer()
-  
-  handler1 = SomeHandler()
-  handler2 = AnotherHandler('test')
-
-  installer.register('localhost', 'y', 'anaconda', 'debian',
-                     ['7.0', '7.1', '7.2', '7.3'],
-                     [(handler1, 'globalpackages'),
-                      (handler2, 'python')])
-
 Start Installation
 ^^^^^^^^^^^^^^^^^^
 
-To start the installation, you just have to call the install-method with the 
-key as argument.::
+To start the installation, you just have to call the install-method.
 
-  from inqbus.installer.registration import parse_arguments, get_registry_key
-  from inqbus.installer.installer import Installer
-  
-  
-  args = parse_arguments()
-  
-  registry_key = get_registry_key(args)
-  
-  installer = Installer()
-  
-  handler1 = SomeHandler()
-  handler2 = AnotherHandler('test')
-
-  installer.register('localhost', 'y', 'anaconda', 'debian',
-                     ['7.0', '7.1', '7.2', '7.3'],
-                     [(handler1, 'globalpackages'),
-                      (handler2, 'python')])
+.. code-block:: python
                       
-  installer.install(registry_key)
+  installer.install()
 
 In this method the installer just takes the registered handlers which match the
-settings given by the registry_key. Then it goes through all purposes and
-starts their installation-process.
+settings automatically given by the registry_key. Then it goes through all 
+purposes and starts their installation-process.
 
 Complete Documentation
 ^^^^^^^^^^^^^^^^^^^^^^

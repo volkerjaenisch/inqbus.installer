@@ -127,10 +127,7 @@ Anaconda-Class and parsed arguments.
 .. code-block:: python
 
   from inqbus.installer.handler import Anaconda, AnacondaVenv
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   anaconda = Anaconda('anaconda')
       
@@ -151,10 +148,7 @@ parsed commandline-arguments and the class which installed Anaconda.
 .. code-block:: python
 
   from inqbus.installer.handler import Anaconda, AnacondaPip
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   anaconda = Anaconda('anaconda')
       
@@ -207,10 +201,7 @@ The following example shows, how it can be used.
 .. code-block:: python
 
   from inqbus.installer.handler import Anaconda, AnacondaProject
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   anaconda = Anaconda('anaconda')
   
@@ -231,10 +222,7 @@ this way:
 .. code-block:: python
 
   from inqbus.installer.handler import VenvWrapper
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   createvenv = VenvWrapper('create_venv', args.venv_name)
 
@@ -260,10 +248,7 @@ You can use it this way:
 .. code-block:: python
 
   from inqbus.installer.handler import WrapperPip
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   venv = WrapperPip('venv_pip', args.venv_name)
   
@@ -294,10 +279,7 @@ The following example shows, how it can be used.
 .. code-block:: python
 
   from inqbus.installer.handler import VenvProject
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   project = VenvProject('~/projects/', 'currentproject', args.venv_name)
 
@@ -315,10 +297,7 @@ be added by using the add-method.
 .. code-block:: python
 
   from inqbus.installer.handler import VenvCommand
-  from inqbus.installer.registration import parse_arguments
-  
-  
-  args = parse_arguments()
+  from inqbus.installer.registration import args
   
   command = VenvProject('venv_command', args.venv_name)
   
