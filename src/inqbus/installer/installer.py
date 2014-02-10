@@ -1,16 +1,17 @@
 from task import TaskMixin
-
+from registration import registry_key
 
 class Installer(object):
 
-    def __init__(self):
+    def __init__(self, registry_key=None):
         # dictionary to hold handler
         self.registered_handler = {}
         # list to hold all purposes for which a step can be added
         self.purposes = ['globalpackages', 'python', 'updatebashrc',
                          'virtualenv', 'pythonpackages', 'getcurrentproject']
+        self.registry_key = registry_key
 
-    def install(self, registry_key):
+    def install(self, registry_key=self.registry_key):
         if registry_key in self.registered_handler:
             install_steps = self.registered_handler[registry_key]
             for purpose in self.purposes:
@@ -27,7 +28,8 @@ class Installer(object):
     def deinstall(self):
         pass
 
-    def register(self, host, venv, p_version, os, versions, handlers):
+    def register(self, host='', venv='', p_version='', os, versions='',
+                 handlers=[]):
         """Function to register handler in installing process."""
         if isinstance(versions, list):
             for version in versions:
@@ -54,3 +56,6 @@ class Installer(object):
                 self.registered_handler[key] = install_steps
             for handler, purpose in handlers:
                 install_steps[purpose].append(handler)
+
+
+installer = Installer(registry_key)
